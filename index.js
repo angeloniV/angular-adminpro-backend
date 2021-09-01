@@ -6,7 +6,7 @@ const cors = require('cors');
 const { dbConnection } = require('./database/config');
 
 //mean_user -> mongo express angular node
-//0d1VPtTSSlXDpTXE
+//qhEnXX8Mu9O3Y4CO
 
 //Crea el servidor express
 const app = express();
@@ -17,15 +17,18 @@ app.use(cors());
 //Base de datos
 dbConnection();
 
-//console.log(process.env);
+// Lectura y parseo del body
+app.use(express.json());
 
 //Rutas
-app.get('/', (req, res) =>{
+app.use('/api/usuarios', require('./routes/usuarios'));
+app.use('/api/login', require('./routes/auth'));
+/*app.get('/', (req, res) =>{
     res.json({
         ok: true,
         msg: 'Hola mundo'
     })
-});
+});*/
 
 app.listen(process.env.PORT, () => {
     console.log('Servidor corriendo en puerto ' + process.env.PORT);
