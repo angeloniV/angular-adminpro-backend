@@ -4,11 +4,23 @@ const bcryp = require("bcryptjs");
 const { generarJWT } = require("../helpers/jwt");
 
 const obtenerUsuarios = async (req, res = response) => {
-  const usuarios = await Usuario.find({}, "nombre email role google"); // asi pongo los datos que quiero que muestre
+  const desde = Number(req.query.desde) || 0; // si el parametro no viene, utiliza el 0.
+  const limite = Number(req.query.limite) || 10;
+
+  const [usuarios, total] = await Promise.all([
+    // ejecuta todas estas promesas. Esto devuelve un arreglo donde la primera posicion corresponde al primer sevicio, etc.
+    Usuario.find({}, "nombre email role google img") // asi pongo los datos que quiero que muestre
+      .skip(desde) // cantidad de objetos que salta
+      .limit(limite), // cantidad de resultados
+
+    Usuario.countDocuments(), // total de registros en la tabla
+  ]);
+
   res.json({
     ok: true,
     usuarios,
-    uid: req.uid // campo que lo toma del middleware validarJWT que lo carga.
+    uid: req.uid, // campo que lo toma del middleware validarJWT que lo carga.
+    total: total,
   });
 };
 
@@ -35,16 +47,15 @@ const crearUsuario = async (req, res) => {
     usuario.password = bcryp.hashSync(password, salt);
 
     // Guardar usuario
-    await usuario.save();
+    const usuarioDB = await usuario.save();
 
-    
     // Generar el TOKEN - JWT
     const token = await generarJWT(usuario._id);
 
     res.json({
       ok: true,
-      usuario,
-      token
+      usuario: usuarioDB,
+      token,
     });
   } catch (error) {
     console.log(error);
@@ -102,7 +113,6 @@ const actualizarUsuario = async (req, res = response) => {
 };
 
 const borrarUsuario = async (req, res = response) => {
-
   const uid = req.params.id;
 
   try {
@@ -119,7 +129,7 @@ const borrarUsuario = async (req, res = response) => {
 
     res.json({
       ok: true,
-      msg: 'Usuario eliminado',
+      msg: "Usuario eliminado",
     });
   } catch (error) {
     console.log(error);
