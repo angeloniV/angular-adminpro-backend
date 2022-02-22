@@ -21,3 +21,9 @@ de @Klerith
 [DotEnv](https://www.npmjs.com/package/dotenv)
 
 [Cors](https://www.npmjs.com/package/cors)
+
+[JSON Web token](https://www.npmjs.com/package/jsonwebtoken)
+
+[Express-fileupload](https://www.npmjs.com/package/express-fileupload)
+
+[Uuid](https://www.npmjs.com/package/uuid)
